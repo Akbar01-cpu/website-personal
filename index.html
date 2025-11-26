@@ -1,395 +1,108 @@
-<!DOCTYPE html><html lang="id"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <title>Login + Absensi Kamera</title>  <link rel="stylesheet" href="style.css"></head><body>  <div class="topbar"><div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login + Absensi Kamera</title>
 
-  <h1 style="margin:0">Sistem Absensi</h1>
+  <!-- STYLE -->
+  <link rel="stylesheet" href="style.css">
+</head>
 
-  <small>Absensi Kamera + Google Sheets</small>
-
-</div>
-
-<div class="flex">
-
-  <button class="toggle small" id="darkToggle">Mode Gelap</button>
-
-  <button class="small" id="btnQR">Login QR</button>
-
-  <button class="small" id="btnAdmin">Admin</button>
-
-</div>
-
-  </div>  <!-- LOGIN -->  <div class="card" id="loginCard"><h2>Login Absensi</h2>
-
-<input type="text" id="loginNama" placeholder="Masukkan nama Anda" />
-
-<button id="btnLogin">Login</button>
-
-<p id="loginStatus"></p>
-
-  </div>  <!-- ABSENSI -->  <div class="card" id="absensiCard"><h2>Absensi Kamera</h2>
-
-
-
-<p><b>Nama:</b> <span id="showNama"></span></p>
-
-
-
-<video id="video" autoplay muted></video>
-
-<button id="btnAmbilFoto">Ambil Foto</button>
-
-<canvas id="canvas" style="display:none;"></canvas>
-
-
-
-<div class="flex">
-
-  <button id="btnKirim">Kirim Absensi</button>
-
-  <button id="btnBukaKamera" class="small">Buka Kamera</button>
-
-</div>
-
-
-
-<p id="status"></p>
-
-  </div>  <!-- DASHBOARD -->  <div class="card" id="dashboardCard" style="display:none; margin-top:20px;"><h2>Dashboard Absensi</h2>
-
-<p><b>Waktu Sekarang:</b> <span id="liveClock"></span></p>
-
-<p><b>Status Absensi:</b> <span id="absenStatus"></span></p>
-
-
-
-<div style="display:flex;gap:10px;align-items:center">
-
-  <div style="flex:1">
-
-    <h3>Rekap Mingguan</h3>
-
-    <canvas id="chart"></canvas>
-
+<body>
+  <div class="topbar">
+    <div>
+      <h1 style="margin:0">Sistem Absensi</h1>
+      <small>Absensi Kamera + Google Sheets</small>
+    </div>
+    <div class="flex">
+      <button class="toggle small" id="darkToggle">Mode Gelap</button>
+      <button class="small" id="btnQR">Login QR</button>
+      <button class="small" id="btnAdmin">Admin</button>
+    </div>
   </div>
 
-  <div style="width:240px">
-
-    <h4>Ringkasan</h4>
-
-    <p>Hadir: <span id="rekapHadir">0</span></p>
-
-    <p>Terlambat: <span id="rekapTelat">0</span></p>
-
-    <p>Tidak Absen: <span id="rekapTidak">0</span></p>
-
-    <button id="btnRefreshRekap">Refresh Rekap</button>
-
+  <!-- LOGIN -->
+  <div class="card" id="loginCard">
+    <h2>Login Absensi</h2>
+    <input type="text" id="loginNama" placeholder="Masukkan nama Anda" />
+    <button id="btnLogin">Login</button>
+    <p id="loginStatus"></p>
   </div>
 
-</div>
-
-  </div>  <!-- QR LOGIN -->  <div class="card" id="qrCard" style="display:none; margin-top:20px;"><h3>Login via QR Code</h3>
-
-<div id="reader" style="width:100%;"></div>
-
-<button id="btnStopQR">Stop QR Scan</button>
-
-  </div>  <!-- ADMIN -->  <div class="card" id="adminCard" style="display:none; margin-top:20px;"><h2>Admin Panel</h2>
-
-<div id="adminLoginArea">
-
-  <input type="password" id="adminPassword" placeholder="Masukkan password admin" />
-
-  <button id="btnAdminLogin">Masuk sebagai Admin</button>
-
-  <p id="adminLoginStatus"></p>
-
-</div>
-
-
-
-<div id="adminArea" class="hidden">
-
-  <div style="display:flex;gap:10px">
-
-    <input type="date" id="filterFrom" />
-
-    <input type="date" id="filterTo" />
-
-    <button id="btnFilterAdmin">Filter</button>
-
-    <button id="btnDownloadCSV">Download CSV</button>
-
+  <!-- ABSENSI -->
+  <div class="card" id="absensiCard">
+    <h2>Absensi Kamera</h2>
+    <p><b>Nama:</b> <span id="showNama"></span></p>
+    <p><b>Lokasi:</b> <span id="showLocation">-</span></p>
+    <video id="video" autoplay muted playsinline></video>
+    <button id="btnAmbilFoto">Ambil Foto</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <div class="flex">
+      <button id="btnKirim">Kirim Absensi</button>
+      <button id="btnBukaKamera" class="small">Buka Kamera</button>
+      <button id="btnStopAutoSave" class="small" style="background:#e84118">Stop Auto-Save</button>
+    </div>
+    <p id="status"></p>
   </div>
 
-  <div id="adminTableWrap" style="overflow:auto;max-height:400px;margin-top:10px">
-
-    <table id="adminTable"><thead><tr><th>No</th><th>Nama</th><th>Waktu</th><th>Foto</th></tr></thead><tbody></tbody></table>
-
+  <!-- DASHBOARD -->
+  <div class="card" id="dashboardCard" style="display:none; margin-top:20px;">
+    <h2>Dashboard Absensi</h2>
+    <p><b>Waktu Sekarang:</b> <span id="liveClock"></span></p>
+    <p><b>Status Absensi:</b> <span id="absenStatus"></span></p>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div style="flex:1">
+        <h3>Rekap Mingguan</h3>
+        <canvas id="chart"></canvas>
+      </div>
+      <div style="width:240px">
+        <h4>Ringkasan</h4>
+        <p>Hadir: <span id="rekapHadir">0</span></p>
+        <p>Terlambat: <span id="rekapTelat">0</span></p>
+        <p>Tidak Absen: <span id="rekapTidak">0</span></p>
+        <button id="btnRefreshRekap">Refresh Rekap</button>
+      </div>
+    </div>
   </div>
 
-</div>
-
-  </div>  <div class="confetti" id="confettiHolder"></div>  <script src="app.js"></script>  <script>
-
-    // -------------------- CONFIG --------------------
-
-    const scriptURL = "https://script.google.com/macros/s/AKfycbx7eyZyaD1YomuL5I_5hnkKsHPrTBg2r1U9wtXXzb183__RgnSjlD7KJ4fh2kyWmOEx/exec";
-
-    let fotoData = "";
-
-    let namaLogin = "";
-
-    let html5Qr = null;
-
-    const ADMIN_PASSWORD = "admin123"; // change as needed
-
-
-
-    // -------------------- UTILITIES --------------------
-
-    function $(id){return document.getElementById(id)}
-
-
-
-    function playTone(freq,duration){
-
-      try{
-
-        const ctx = new (window.AudioContext||window.webkitAudioContext)();
-
-        const o = ctx.createOscillator();
-
-        const g = ctx.createGain();
-
-        o.connect(g); g.connect(ctx.destination);
-
-        o.type='sine'; o.frequency.value = freq;
-
-        g.gain.setValueAtTime(0.001, ctx.currentTime);
-
-        g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime+0.01);
-
-        o.start();
-
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+duration);
-
-        setTimeout(()=>{ o.stop(); ctx.close(); }, duration*1000+60);
-
-      }catch(e){ console.warn('Audio failed', e); }
-
-    }
-
-
-
-    function showConfetti(){
-
-      const holder = $('confettiHolder');
-
-      for(let i=0;i<40;i++){
-
-        const el = document.createElement('i');
-
-        el.style.left = Math.random()*100+'%';
-
-        el.style.background = ['#ff5252','#ffb142','#7bed9f','#2ed573','#70a1ff'][Math.floor(Math.random()*5)];
-
-        el.style.transform = 'rotate('+Math.random()*360+'deg)';
-
-        el.style.top = '-10px'; el.style.opacity = 1; holder.appendChild(el);
-
-        const fall = 2000 + Math.random()*2000;
-
-        el.animate([{transform:'translateY(0) rotate(0)',opacity:1},{transform:'translateY('+ (300+Math.random()*300) +'px) rotate(600deg)',opacity:0}],{duration:fall,iterations:1});
-
-        setTimeout(()=>el.remove(), fall+300);
-
-      }
-
-    }
-
-
-
-    // -------------------- THEME --------------------
-
-    function applyTheme(t){
-
-      if(t==='dark') document.documentElement.setAttribute('data-theme','dark');
-
-      else document.documentElement.removeAttribute('data-theme');
-
-      localStorage.setItem('theme', t);
-
-      $('darkToggle').innerText = t==='dark' ? 'Mode Terang' : 'Mode Gelap';
-
-    }
-
-
-
-    // -------------------- CLOCK --------------------
-
-    let clockInterval = null;
-
-    function startClock(){
-
-      const el = $('liveClock');
-
-      if(clockInterval) clearInterval(clockInterval);
-
-      clockInterval = setInterval(()=>{ const now = new Date(); el.innerText = now.toLocaleString(); }, 1000);
-
-    }
-
-
-
-    // -------------------- LOGIN / VALIDATION --------------------
-
-    async function checkNama(nama){
-
-      try{
-
-        const res = await fetch(scriptURL + "?mode=cekNama&nama=" + encodeURIComponent(nama));
-
-        return await res.json();
-
-      }catch(e){ console.warn('checkNama error', e); return { valid: false }; }
-
-    }
-
-
-
-    async function login(){
-
-      const nama = $('loginNama').value.trim();
-
-      const loginStatus = $('loginStatus');
-
-      if(!nama){ loginStatus.innerText='Nama tidak boleh kosong!'; loginStatus.style.color='red'; return; }
-
-      loginStatus.innerText = 'Memvalidasi nama...'; loginStatus.style.color='black';
-
-      const data = await checkNama(nama);
-
-      if(data && data.valid){
-
-        loginStatus.innerText = 'Login berhasil!'; loginStatus.style.color='green';
-
-        namaLogin = nama; $('showNama').innerText = nama;
-
-        $('loginCard').style.display = 'none'; $('absensiCard').style.display = 'block';
-
-        bukaKamera();
-
-      }else{
-
-        loginStatus.innerText = 'Nama tidak terdaftar!'; loginStatus.style.color='red';
-
-      }
-
-    }
-
-
-
-    async function bukaKamera(){
-
-      const video = $('video');
-
-      try{
-
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-
-        video.srcObject = stream;
-
-      }catch(e){ alert('Izin kamera ditolak!'); }
-
-    }
-
-
-
-    function ambilFoto(){
-
-      const video = $('video'); const canvas = $('canvas'); const ctx = canvas.getContext('2d');
-
-      canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
-
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      fotoData = canvas.toDataURL('image/png');
-
-      playTone(880, 0.08);
-
-      alert('Foto berhasil diambil!');
-
-    }
-
-
-
-    async function kirimAbsensi(){
-
-      const status = $('status');
-
-      if(!fotoData){ alert('Anda harus mengambil foto terlebih dahulu!'); playTone(220,0.15); return; }
-
-      const now = new Date(); const jam = now.getHours(); const menit = now.getMinutes(); const waktuAbsen = now.toLocaleString();
-
-      let statusAbsen = '';
-
-      if(jam>16 || (jam===16 && menit>0)) statusAbsen = 'Diluar Jam Pulang';
-
-      else if(jam>8 || (jam===8 && menit>0)) statusAbsen = 'Terlambat';
-
-      else statusAbsen = 'Tepat Waktu';
-
-      status.innerText = 'Mengirim absensi...';
-
-      try{
-
-        await fetch(scriptURL, {
-
-          method: 'POST', mode: 'no-cors', headers: {'Content-Type':'application/json'},
-
-          body: JSON.stringify({ mode: 'absen', nama: namaLogin, waktu: waktuAbsen + ' | ' + statusAbsen, foto: fotoData })
-
-        });
-
-        status.innerText = 'Absensi berhasil dikirim!';
-
-        $('absenStatus').innerText = statusAbsen;
-
-        $('absensiCard').style.display = 'none'; $('dashboardCard').style.display = 'block';
-
-        startClock(); refreshRekap(); playTone(1046,0.12); showConfetti();
-
-      }catch(e){ status.innerText = 'Gagal mengirim!'; playTone(220,0.15); }
-
-    }
-
-
-
-    // QR CODE (html5-qrcode)
-
-    function showQR(){ $('qrCard').style.display = 'block'; startQR(); }
-
-    function startQR(){
-
-      if(typeof Html5Qrcode === 'undefined') return alert('Library html5-qrcode belum dimuat');
-
-      if(html5Qr) return;
-
-      html5Qr = new Html5Qrcode('reader');
-
-      Html5Qrcode.getCameras().then(cameras=>{
-
-        if(!cameras || !cameras.length) return alert('Tidak ada kamera yang ditemukan');
-
-        html5Qr.start(cameras[0].id, { fps: 10, qrbox: 250 }, qrText=>{
-
-          $('loginNama').value = qrText; stopQR(); login();
-
-        }).catch(e=>console.warn('QR start error', e));
-
-      }).catch(e=>console.warn('getCameras failed', e));
-
-    }
-
-    function stopQR(){ if(html5Qr){ html5Qr.stop().catch(()=>{}); html5Qr.clear(); html5Qr = null; } $('qrCard').style.display = 'none'; }
-
-The code continues... (truncated to save space)
+  <!-- QR LOGIN -->
+  <div class="card" id="qrCard" style="display:none; margin-top:20px;">
+    <h3>Login via QR Code</h3>
+    <div id="reader" style="width:100%;"></div>
+    <button id="btnStopQR">Stop QR Scan</button>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="card" id="adminCard" style="display:none; margin-top:20px;">
+    <h2>Admin Panel</h2>
+    <div id="adminLoginArea">
+      <input type="password" id="adminPassword" placeholder="Masukkan password admin" />
+      <button id="btnAdminLogin">Masuk sebagai Admin</button>
+      <p id="adminLoginStatus"></p>
+    </div>
+
+    <div id="adminArea" class="hidden">
+      <div style="display:flex;gap:10px">
+        <input type="date" id="filterFrom" />
+        <input type="date" id="filterTo" />
+        <button id="btnFilterAdmin">Filter</button>
+        <button id="btnDownloadCSV">Download CSV</button>
+      </div>
+      <div id="adminTableWrap" style="overflow:auto;max-height:400px;margin-top:10px">
+        <table id="adminTable">
+          <thead>
+            <tr><th>No</th><th>Nama</th><th>Waktu</th><th>Foto</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="confetti" id="confettiHolder"></div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="app.js"></script>
+</body>
+</html>
